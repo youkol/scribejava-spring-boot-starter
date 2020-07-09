@@ -1,0 +1,4 @@
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.OAuth2ClientAutoConfiguration,\
+com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet.OAuth2MvcAutoConfiguration

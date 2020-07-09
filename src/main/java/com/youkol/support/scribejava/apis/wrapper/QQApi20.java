@@ -1,0 +1,60 @@
+package com.youkol.support.scribejava.apis.wrapper;
+
+import java.io.OutputStream;
+
+import com.github.scribejava.core.httpclient.HttpClient;
+import com.github.scribejava.core.httpclient.HttpClientConfig;
+import com.github.scribejava.core.model.Verb;
+import com.github.scribejava.core.oauth2.bearersignature.BearerSignature;
+import com.github.scribejava.core.oauth2.bearersignature.BearerSignatureURIQueryParameter;
+import com.youkol.support.scribejava.service.wapper.AbstractOAuth2ServiceWrapper;
+import com.youkol.support.scribejava.service.wapper.QQOAuth2ServiceWrapper;
+
+/**
+ * QQ OAuth 2.0 api.
+ * 
+ * @author jackiea
+ * @see <a href=
+ *      "https://wiki.open.qq.com/wiki/website/OAuth2.0%E5%BC%80%E5%8F%91%E6%96%87%E6%A1%A3">腾讯开放文档
+ *      - 网站接入</a>
+ */
+public class QQApi20 extends WrapperDefaultApi20 {
+
+    protected QQApi20() {
+    }
+
+    private static class InstanceHolder {
+        private static final QQApi20 INSTANCE = new QQApi20();
+    }
+
+    public static QQApi20 instance() {
+        return InstanceHolder.INSTANCE;
+    }
+
+    @Override
+    public String getAccessTokenEndpoint() {
+        return "https://graph.qq.com/oauth2.0/token";
+    }
+
+    @Override
+    protected String getAuthorizationBaseUrl() {
+        return "https://graph.qq.com/oauth2.0/authorize";
+    }
+
+    public BearerSignature getBearerSignature() {
+        return BearerSignatureURIQueryParameter.instance();
+    }
+
+    @Override
+    public Verb getAccessTokenVerb() {
+        return Verb.GET;
+    }
+
+    @Override
+    public AbstractOAuth2ServiceWrapper createService(String apiKey, String apiSecret, String callback,
+            String defaultScope, String responseType, OutputStream debugStream, String userAgent,
+            HttpClientConfig httpClientConfig, HttpClient httpClient) {
+        return new QQOAuth2ServiceWrapper(this, apiKey, apiSecret, callback, defaultScope, responseType, debugStream, userAgent, httpClientConfig, httpClient);
+    }
+
+}

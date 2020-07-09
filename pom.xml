@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2016 the original author or authors.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.youkol</groupId>
+    <artifactId>youkol-parent</artifactId>
+    <version>2</version>
+    <relativePath />
+  </parent>
+
+  <groupId>com.youkol.support.scribejava</groupId>
+  <artifactId>scribejava-spring-boot-starter</artifactId>
+  <version>1.1.2-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>Youkol :: scribejava-spring-boot-starter</name>
+  <description>scribejava for spring boot start.</description>
+  <url>https://github.com/youkol/scribejava-spring-boot-starter</url>
+
+  <inceptionYear>2016</inceptionYear>
+  <organization>
+    <name>youkol.com</name>
+    <url>http://www.youkol.com/</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>jackiea</name>
+      <email>jackiea_21@163.com</email>
+      <organizationUrl>https://github.com/youkol</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>+8</timezone>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/youkol/scribejava-spring-boot-starter.git</connection>
+    <developerConnection>scm:git:git@github.com:youkol/scribejava-spring-boot-starter.git</developerConnection>
+    <url>https://github.com/youkol/scribejava-spring-boot-starter</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub Issue Management</system>
+    <url>https://github.com/youkol/scribejava-spring-boot-starter/issues</url>
+  </issueManagement>
+
+  <properties>
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.resources.sourceEncoding>UTF-8</project.resources.sourceEncoding>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <spring.boot.version>2.2.7.RELEASE</spring.boot.version>
+    <scribejava.version>6.9.0</scribejava.version>
+    <scribejava-support.version>1.1.1</scribejava-support.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.github.scribejava</groupId>
+      <artifactId>scribejava-apis</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.youkol.support.scribejava</groupId>
+      <artifactId>scribejava-support</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <!-- @ConfigurationProperties annotation processing (metadata for IDEs) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure-processor</artifactId>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.github.scribejava</groupId>
+        <artifactId>scribejava-core</artifactId>
+        <version>${scribejava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.scribejava</groupId>
+        <artifactId>scribejava-apis</artifactId>
+        <version>${scribejava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.youkol.support.scribejava</groupId>
+        <artifactId>scribejava-support</artifactId>
+        <version>${scribejava-support.version}</version>
+      </dependency>
+      <dependency>
+        <!-- Import dependency management from Spring Boot -->
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring.boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+</project>
