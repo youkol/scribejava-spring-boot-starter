@@ -21,7 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.youkol.support.scribejava.service.delegate.OAuth2AuthenticationException;
+import com.youkol.support.scribejava.service.OAuth2AuthenticationException;
 
 public interface AuthenticationFailureHandler {
 

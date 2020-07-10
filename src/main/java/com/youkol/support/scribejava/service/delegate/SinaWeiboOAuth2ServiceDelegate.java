@@ -34,6 +34,7 @@ import com.youkol.support.scribejava.apis.wechat.WeChatAccessTokenErrorResponse;
 import com.youkol.support.scribejava.oauth2.client.registration.ClientRegistrationRepository;
 import com.youkol.support.scribejava.oauth2.user.DefaultOAuth2User;
 import com.youkol.support.scribejava.oauth2.user.OAuth2User;
+import com.youkol.support.scribejava.service.OAuth2AuthenticationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

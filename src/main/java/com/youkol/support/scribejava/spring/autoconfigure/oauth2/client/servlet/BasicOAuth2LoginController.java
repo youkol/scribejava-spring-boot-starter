@@ -27,13 +27,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.scribejava.core.exceptions.OAuthException;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.youkol.support.scribejava.apis.wechat.WeChatAccessTokenErrorResponse;
 import com.youkol.support.scribejava.oauth2.client.OAuth2ClientServiceDelegate;
 import com.youkol.support.scribejava.oauth2.user.OAuth2User;
-import com.youkol.support.scribejava.service.delegate.OAuth2AuthenticationException;
+import com.youkol.support.scribejava.service.OAuth2AuthenticationException;
 import com.youkol.support.scribejava.service.delegate.OAuth2ServiceDelegate;
 import com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet.handler.AuthenticationFailureHandler;
 import com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet.handler.AuthenticationSuccessHandler;

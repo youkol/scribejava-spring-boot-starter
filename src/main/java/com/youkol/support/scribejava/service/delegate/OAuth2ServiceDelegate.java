@@ -31,6 +31,7 @@ import com.github.scribejava.core.oauth.AuthorizationUrlBuilder;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.github.scribejava.core.pkce.PKCE;
 import com.youkol.support.scribejava.oauth2.user.OAuth2User;
+import com.youkol.support.scribejava.service.OAuth2AuthenticationException;
 
 /**
  * 

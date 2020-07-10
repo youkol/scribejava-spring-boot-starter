@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.youkol.support.scribejava.service.delegate;
+package com.youkol.support.scribejava.service;
 
 public class OAuth2AuthenticationException extends Exception {
 
