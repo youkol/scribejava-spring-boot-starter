@@ -50,5 +50,10 @@ public class DefaultOAuth2User implements OAuth2User {
     public String getName() {
         return getAttribute(nameAttributeKey).toString();
     }
+
+    @Override
+    public String toString() {
+        return "DefaultOAuth2User [attributes=" + attributes + ", nameAttributeKey=" + nameAttributeKey + "]";
+    }
     
 }
