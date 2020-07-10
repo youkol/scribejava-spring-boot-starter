@@ -57,8 +57,6 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
 
     private OAuth2LoginProperties oAuth2LoginProperties;
 
-    // private OAuth2ClientServiceWrapper oAuth2ClientService;
-
     private OAuth2ClientServiceDelegate oAuth2ClientServiceDelegate;
 
     @Autowired
@@ -67,11 +65,6 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
     @Autowired
     private ObjectProvider<AuthenticationFailureHandler> failureHandler;
 
-    // public BasicOAuth2LoginController(OAuth2LoginProperties
-    // oAuth2LoginProperties, OAuth2ClientServiceWrapper oAuth2ClientService) {
-    // this.oAuth2LoginProperties = oAuth2LoginProperties;
-    // this.oAuth2ClientService = oAuth2ClientService;
-    // }
     public BasicOAuth2LoginController(OAuth2LoginProperties oAuth2LoginProperties,
             OAuth2ClientServiceDelegate oAuth2ClientServiceDelegate) {
         this.oAuth2LoginProperties = oAuth2LoginProperties;
@@ -84,8 +77,6 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        // AbstractOAuth2ServiceWrapper oAuth20Service =
-        // oAuth2ClientService.getOAuth2Service(registrationId);
         OAuth2ServiceDelegate oAuth20Service = oAuth2ClientServiceDelegate.getDelegate(registrationId);
 
         String redirectUriTemplate = oAuth20Service.getAuthorizationUrl(UUID.randomUUID().toString());
@@ -111,8 +102,6 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
         }
 
         try {
-            // AbstractOAuth2ServiceWrapper oAuth20Service =
-            // oAuth2ClientService.getOAuth2Service(registrationId);
             OAuth2ServiceDelegate oAuth20Service = oAuth2ClientServiceDelegate.getDelegate(registrationId);
 
             OAuth2AccessToken accessToken = oAuth20Service.getAccessToken(code);

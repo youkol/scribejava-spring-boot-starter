@@ -15,13 +15,8 @@
  */
 package com.youkol.support.scribejava.spring.autoconfigure.oauth2.client;
 
-import java.util.Map;
-
-import com.youkol.support.scribejava.apis.wrapper.WrapperDefaultApi20;
 import com.youkol.support.scribejava.oauth2.client.OAuth2ClientServiceDelegate;
-import com.youkol.support.scribejava.oauth2.client.OAuth2ClientServiceWrapper;
 import com.youkol.support.scribejava.oauth2.client.registration.ClientRegistration;
-import com.youkol.support.scribejava.oauth2.client.registration.ClientRegistrationRepository;
 import com.youkol.support.scribejava.service.delegate.OAuth2ServiceDelegate;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -41,13 +36,6 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnProperty(name = "youkol.oauth2.client.enabled", matchIfMissing = true)
 @Import({ OAuth2ClientRegistrationRepositoryConfiguration.class })
 public class OAuth2ClientAutoConfiguration {
-
-    // @Bean
-    // @ConditionalOnBean(WrapperDefaultApi20.class)
-    // @ConditionalOnMissingBean
-    // public OAuth2ClientServiceWrapper oAuth2ClientService(ClientRegistrationRepository clientRegistrationRepository, Map<String, WrapperDefaultApi20> apis) {
-    //     return new OAuth2ClientServiceWrapper(clientRegistrationRepository, apis);
-    // }
 
     @Bean
     @ConditionalOnBean(OAuth2ServiceDelegate.class)
