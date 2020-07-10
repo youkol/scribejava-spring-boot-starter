@@ -19,8 +19,8 @@ import java.io.OutputStream;
 
 import com.github.scribejava.core.httpclient.HttpClient;
 import com.github.scribejava.core.httpclient.HttpClientConfig;
-import com.youkol.support.scribejava.service.wapper.AbstractOAuth2ServiceWrapper;
-import com.youkol.support.scribejava.service.wapper.WeChatMpOAuth2ServiceWrapper;
+import com.youkol.support.scribejava.service.wrapper.AbstractOAuth2ServiceWrapper;
+import com.youkol.support.scribejava.service.wrapper.WeChatMpOAuth2ServiceWrapper;
 
 /**
  * WeChat OAuth 2.0 api. For WeChat Official Account.

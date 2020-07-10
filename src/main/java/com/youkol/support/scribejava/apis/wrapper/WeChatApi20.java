@@ -30,8 +30,8 @@ import com.github.scribejava.core.oauth2.clientauthentication.ClientAuthenticati
 import com.youkol.support.scribejava.apis.wechat.WeChatAccessTokenJsonExtractor;
 import com.youkol.support.scribejava.apis.wechat.WeChatConstants;
 import com.youkol.support.scribejava.apis.wechat.WeChatRequestBodyAuthenticationScheme;
-import com.youkol.support.scribejava.service.wapper.AbstractOAuth2ServiceWrapper;
-import com.youkol.support.scribejava.service.wapper.WeChatOAuth2ServiceWrapper;
+import com.youkol.support.scribejava.service.wrapper.AbstractOAuth2ServiceWrapper;
+import com.youkol.support.scribejava.service.wrapper.WeChatOAuth2ServiceWrapper;
 
 /**
  * WeChat OAuth 2.0 api.

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.youkol.support.scribejava.service.wapper;
+package com.youkol.support.scribejava.service.wrapper;
 
 import java.io.OutputStream;
 import java.util.Map;
@@ -32,15 +32,15 @@ import com.youkol.support.scribejava.oauth2.user.OAuth2User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QQOAuth2ServiceWrapper extends AbstractOAuth2ServiceWrapper {
+public class SinaWeiboOAuth2ServiceWrapper extends AbstractOAuth2ServiceWrapper {
 
-    private static final Logger log = LoggerFactory.getLogger(QQOAuth2ServiceWrapper.class);
+    private static final Logger log = LoggerFactory.getLogger(SinaWeiboOAuth2ServiceWrapper.class);
 
-    protected static final String USERINFO_RESOURCE_URL = "https://graph.qq.com/oauth2.0/me";
+    protected static final String USERINFO_RESOURCE_URL = "https://api.weibo.com/oauth2/get_token_info";
 
-    private static final String NAME_PARAM_KEY = "openid";
+    private static final String NAME_PARAM_KEY = "uid";
 
-    public QQOAuth2ServiceWrapper(final DefaultApi20 api, final String apiKey, final String apiSecret, final String callback,
+    public SinaWeiboOAuth2ServiceWrapper(final DefaultApi20 api, final String apiKey, final String apiSecret, final String callback,
             final String defaultScope, final String responseType, final OutputStream debugStream, final String userAgent,
             final HttpClientConfig httpClientConfig, final HttpClient httpClient) {
         super(api, apiKey, apiSecret, callback, defaultScope, responseType, debugStream, userAgent, httpClientConfig,
@@ -56,19 +56,15 @@ public class QQOAuth2ServiceWrapper extends AbstractOAuth2ServiceWrapper {
 
             log.debug("Response code: {}, body: {}", response.getCode(), response.getBody());
 
-            String body = response.getBody();
-            if (body.startsWith("callback(")) {
-                body = body.substring(9, body.length() - 2).trim();
-            }
-
             if (!response.isSuccessful()) {
-                OAuth2AccessTokenJsonExtractor.instance().generateError(body);
+                OAuth2AccessTokenJsonExtractor.instance().generateError(response.getBody());
                 return null; // not run always.
             }
 
-            final Map<String, Object> map = this.getLazyObjectMapper().readValue(body, mapType);
+            final Map<String, Object> map = this.getLazyObjectMapper().readValue(response.getBody(), mapType);
             final DefaultOAuth2User oAuth2User = new DefaultOAuth2User(NAME_PARAM_KEY, map);
             return oAuth2User;
         }
     }
+
 }

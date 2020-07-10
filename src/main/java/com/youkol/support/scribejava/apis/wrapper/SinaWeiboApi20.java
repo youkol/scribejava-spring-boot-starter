@@ -21,8 +21,8 @@ import com.github.scribejava.core.httpclient.HttpClient;
 import com.github.scribejava.core.httpclient.HttpClientConfig;
 import com.github.scribejava.core.oauth2.bearersignature.BearerSignature;
 import com.github.scribejava.core.oauth2.bearersignature.BearerSignatureURIQueryParameter;
-import com.youkol.support.scribejava.service.wapper.AbstractOAuth2ServiceWrapper;
-import com.youkol.support.scribejava.service.wapper.SinaWeiboOAuth2ServiceWrapper;
+import com.youkol.support.scribejava.service.wrapper.AbstractOAuth2ServiceWrapper;
+import com.youkol.support.scribejava.service.wrapper.SinaWeiboOAuth2ServiceWrapper;
 
 /**
  * SinaWeibo OAuth 2.0 api.

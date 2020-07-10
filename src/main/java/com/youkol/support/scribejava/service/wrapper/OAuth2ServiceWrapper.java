@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.youkol.support.scribejava.service.wapper;
+package com.youkol.support.scribejava.service.wrapper;
 
 import java.io.Closeable;
 

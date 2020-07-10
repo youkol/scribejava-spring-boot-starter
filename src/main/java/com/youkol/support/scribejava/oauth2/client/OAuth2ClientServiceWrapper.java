@@ -24,7 +24,7 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import com.youkol.support.scribejava.apis.wrapper.WrapperDefaultApi20;
 import com.youkol.support.scribejava.oauth2.client.registration.ClientRegistration;
 import com.youkol.support.scribejava.oauth2.client.registration.ClientRegistrationRepository;
-import com.youkol.support.scribejava.service.wapper.AbstractOAuth2ServiceWrapper;
+import com.youkol.support.scribejava.service.wrapper.AbstractOAuth2ServiceWrapper;
 
 public class OAuth2ClientServiceWrapper {
 

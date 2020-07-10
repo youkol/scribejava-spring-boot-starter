@@ -33,7 +33,7 @@ import com.youkol.support.scribejava.apis.wechat.WeChatAccessTokenErrorResponse;
 import com.youkol.support.scribejava.oauth2.client.OAuth2ClientServiceWrapper;
 import com.youkol.support.scribejava.oauth2.user.OAuth2User;
 import com.youkol.support.scribejava.service.OAuth2AuthenticationException;
-import com.youkol.support.scribejava.service.wapper.AbstractOAuth2ServiceWrapper;
+import com.youkol.support.scribejava.service.wrapper.AbstractOAuth2ServiceWrapper;
 import com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet.handler.AuthenticationFailureHandler;
 import com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet.handler.AuthenticationSuccessHandler;
 

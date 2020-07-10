@@ -20,7 +20,7 @@ import java.io.OutputStream;
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.httpclient.HttpClient;
 import com.github.scribejava.core.httpclient.HttpClientConfig;
-import com.youkol.support.scribejava.service.wapper.AbstractOAuth2ServiceWrapper;
+import com.youkol.support.scribejava.service.wrapper.AbstractOAuth2ServiceWrapper;
 
 public abstract class WrapperDefaultApi20 extends DefaultApi20 {
 
