@@ -53,7 +53,9 @@ public class DefaultOAuth2User implements OAuth2User {
 
     @Override
     public String toString() {
-        return "DefaultOAuth2User [attributes=" + attributes + ", nameAttributeKey=" + nameAttributeKey + "]";
+        return "DefaultOAuth2User [attributes=" + attributes + 
+                ", nameAttributeKey=" + nameAttributeKey + 
+                ", name=" + this.getName() + "]";
     }
-    
+
 }

@@ -34,6 +34,8 @@ import com.youkol.support.scribejava.oauth2.client.OAuth2ClientServiceDelegate;
 import com.youkol.support.scribejava.oauth2.user.OAuth2User;
 import com.youkol.support.scribejava.service.OAuth2AuthenticationException;
 import com.youkol.support.scribejava.service.delegate.OAuth2ServiceDelegate;
+import com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet.event.AuthenticationFailureEvent;
+import com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet.event.AuthenticationSuccessEvent;
 import com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet.handler.AuthenticationFailureHandler;
 import com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet.handler.AuthenticationSuccessHandler;
 
@@ -41,6 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -51,13 +55,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Validated
 @Controller
-public class BasicOAuth2LoginController implements OAuth2LoginController {
+public class BasicOAuth2LoginController implements OAuth2LoginController, ApplicationEventPublisherAware {
 
     public static final Logger log = LoggerFactory.getLogger(BasicOAuth2LoginController.class);
 
     private OAuth2LoginProperties oAuth2LoginProperties;
 
     private OAuth2ClientServiceDelegate oAuth2ClientServiceDelegate;
+
+    protected ApplicationEventPublisher eventPublisher;
 
     @Autowired
     private ObjectProvider<AuthenticationSuccessHandler> successHandler;
@@ -74,8 +80,7 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
     @RequestMapping(value = "${youkol.oauth2.web.authorize.path:/oauth2/authorize/{registrationId}}")
     public void authenticate(@PathVariable String registrationId,
             @RequestParam(name = "redirect_uri", required = false) String successRedirectUri, // 成功授权之后，需要返回的地址
-            HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+            HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         OAuth2ServiceDelegate oAuth20Service = oAuth2ClientServiceDelegate.getDelegate(registrationId);
 
@@ -101,52 +106,59 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
             throw new OAuth2AuthenticationException("INVALID_REQUEST");
         }
 
+        OAuth2AccessToken accessToken = null;
+        OAuth2User oAuth2User;
+
         try {
             OAuth2ServiceDelegate oAuth20Service = oAuth2ClientServiceDelegate.getDelegate(registrationId);
 
-            OAuth2AccessToken accessToken = oAuth20Service.getAccessToken(code);
+            accessToken = oAuth20Service.getAccessToken(code);
 
             log.debug("OAuth2 accessToken: " + accessToken);
 
-            OAuth2User oAuth2User = oAuth20Service.getOAuth2User(accessToken);
-
-            if (oAuth2User != null) {
-                log.debug(oAuth2User.getName());
-                log.debug(oAuth2User.getAttributes().toString());
-            }
-
-            // on success
-            this.onAuthenticationSuccess(request, response, accessToken, oAuth2User);
-
-            // redirect uri.
-            if (StringUtils.hasText(successRedirectUri)) {
-                response.sendRedirect(successRedirectUri);
-            }
+            oAuth2User = oAuth20Service.getOAuth2User(accessToken);
 
         } catch (OAuth2AccessTokenErrorResponse ex) {
             // on failure
-            OAuth2AuthenticationException exception = new OAuth2AuthenticationException(ex.getError().name(), ex.getErrorDescription(), ex.getRawResponse(), ex);
-            this.onAuthenticationFailure(request, response, exception);
+            OAuth2AuthenticationException exception = new OAuth2AuthenticationException(ex.getError().name(),
+                    ex.getErrorDescription(), ex.getRawResponse(), ex);
+            this.onAuthenticationFailure(request, response, accessToken, exception);
             throw exception;
         } catch (WeChatAccessTokenErrorResponse ex) {
             // on failure
-            OAuth2AuthenticationException exception = new OAuth2AuthenticationException(ex.getErrorCode(), ex.getErrorMessage(), ex.getRawResponse(), ex);
-            this.onAuthenticationFailure(request, response, exception);
+            OAuth2AuthenticationException exception = new OAuth2AuthenticationException(ex.getErrorCode(),
+                    ex.getErrorMessage(), ex.getRawResponse(), ex);
+            this.onAuthenticationFailure(request, response, accessToken, exception);
             throw exception;
         } catch (OAuth2AuthenticationException ex) {
             // on failure
-            this.onAuthenticationFailure(request, response, ex);
+            this.onAuthenticationFailure(request, response, accessToken, ex);
             throw ex;
         } catch (Exception ex) {
             OAuth2AuthenticationException exception = new OAuth2AuthenticationException("OAuth2 callback error", ex);
             // on failure
-            this.onAuthenticationFailure(request, response, exception);
+            this.onAuthenticationFailure(request, response, accessToken, exception);
             throw exception;
+        }
+
+        // on success
+        this.onAuthenticationSuccess(request, response, accessToken, oAuth2User);
+
+        // redirect uri.
+        if (StringUtils.hasText(successRedirectUri)) {
+            response.sendRedirect(successRedirectUri);
         }
     }
 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             OAuth2AccessToken accessToken, OAuth2User oAuth2User) throws IOException, ServletException {
+        log.debug("OAuth2User: " + oAuth2User);
+
+        // fire event
+        if (this.eventPublisher != null) {
+            this.eventPublisher.publishEvent(new AuthenticationSuccessEvent(accessToken, oAuth2User));
+        }
+
         Iterator<AuthenticationSuccessHandler> iterator = successHandler.iterator();
         while (iterator.hasNext()) {
             iterator.next().onAuthenticationSuccess(request, response, accessToken, oAuth2User);
@@ -154,14 +166,21 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
     }
 
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-            OAuth2AuthenticationException exception) throws IOException, ServletException {
+            OAuth2AccessToken accessToken, OAuth2AuthenticationException exception)
+            throws IOException, ServletException {
+        // fire event
+        if (this.eventPublisher != null) {
+            this.eventPublisher.publishEvent(new AuthenticationFailureEvent(accessToken, exception));
+        }
+
         Iterator<AuthenticationFailureHandler> iterator = failureHandler.iterator();
         while (iterator.hasNext()) {
             iterator.next().onAuthenticationFailure(request, response, exception);
         }
     }
 
-    private String expandRedirectUri(HttpServletRequest request, String registrationId, String redirectUriTemplate, String successRedirectUri) {
+    private String expandRedirectUri(HttpServletRequest request, String registrationId, String redirectUriTemplate,
+            String successRedirectUri) {
         String contextPath = request.getContextPath();
         String fullRequestUrl = this.buildFullRequestUrl(request);
         String baseUrl = UriComponentsBuilder.fromHttpUrl(fullRequestUrl)
@@ -176,6 +195,7 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
         uriVariables.put("redirect_uri", successRedirectUri);
 
         return UriComponentsBuilder.fromUriString(redirectUriTemplate)
+            .encode()
             .buildAndExpand(uriVariables)
             .toUriString();
     }
@@ -214,6 +234,12 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
 
     public void setFailureHandler(ObjectProvider<AuthenticationFailureHandler> failureHandler) {
         this.failureHandler = failureHandler;
+    }
+
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.eventPublisher = applicationEventPublisher;
+
     }
 
     
