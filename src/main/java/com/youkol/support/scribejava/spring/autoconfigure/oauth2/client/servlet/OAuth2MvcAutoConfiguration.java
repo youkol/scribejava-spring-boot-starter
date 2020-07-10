@@ -15,7 +15,6 @@
  */
 package com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet;
 
-import com.youkol.support.scribejava.oauth2.client.OAuth2ClientServiceDelegate;
 import com.youkol.support.scribejava.oauth2.client.OAuth2ClientServiceWrapper;
 import com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.OAuth2ClientAutoConfiguration;
 
@@ -40,17 +39,11 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(name = "youkol.oauth2.web.enabled", matchIfMissing = true)
 public class OAuth2MvcAutoConfiguration {
 
-    // @Bean
-    // @ConditionalOnBean(OAuth2ClientServiceWrapper.class)
-    // @ConditionalOnMissingBean(value = OAuth2LoginController.class, search = SearchStrategy.CURRENT)
-    // public BasicOAuth2LoginController oAuth2LoginController(OAuth2LoginProperties properties, OAuth2ClientServiceWrapper oAuth2ClientService) {
-    //     return new BasicOAuth2LoginController(properties, oAuth2ClientService);
-    // }
-
     @Bean
-    @ConditionalOnBean(OAuth2ClientServiceDelegate.class)
+    @ConditionalOnBean(OAuth2ClientServiceWrapper.class)
     @ConditionalOnMissingBean(value = OAuth2LoginController.class, search = SearchStrategy.CURRENT)
-    public BasicOAuth2LoginController oAuth2LoginController(OAuth2LoginProperties properties, OAuth2ClientServiceDelegate oAuth2ClientServiceDelegate) {
-        return new BasicOAuth2LoginController(properties, oAuth2ClientServiceDelegate);
+    public BasicOAuth2LoginController oAuth2LoginController(OAuth2LoginProperties properties, OAuth2ClientServiceWrapper oAuth2ClientService) {
+        return new BasicOAuth2LoginController(properties, oAuth2ClientService);
     }
+
 }

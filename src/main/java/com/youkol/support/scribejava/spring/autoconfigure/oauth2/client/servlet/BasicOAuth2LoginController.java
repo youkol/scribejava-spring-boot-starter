@@ -30,10 +30,10 @@ import javax.servlet.http.HttpServletResponse;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.youkol.support.scribejava.apis.wechat.WeChatAccessTokenErrorResponse;
-import com.youkol.support.scribejava.oauth2.client.OAuth2ClientServiceDelegate;
+import com.youkol.support.scribejava.oauth2.client.OAuth2ClientServiceWrapper;
 import com.youkol.support.scribejava.oauth2.user.OAuth2User;
 import com.youkol.support.scribejava.service.OAuth2AuthenticationException;
-import com.youkol.support.scribejava.service.delegate.OAuth2ServiceDelegate;
+import com.youkol.support.scribejava.service.wapper.AbstractOAuth2ServiceWrapper;
 import com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet.handler.AuthenticationFailureHandler;
 import com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet.handler.AuthenticationSuccessHandler;
 
@@ -57,9 +57,7 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
 
     private OAuth2LoginProperties oAuth2LoginProperties;
 
-    // private OAuth2ClientServiceWrapper oAuth2ClientService;
-
-    private OAuth2ClientServiceDelegate oAuth2ClientServiceDelegate;
+    private OAuth2ClientServiceWrapper oAuth2ClientService;
 
     @Autowired
     private ObjectProvider<AuthenticationSuccessHandler> successHandler;
@@ -67,15 +65,10 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
     @Autowired
     private ObjectProvider<AuthenticationFailureHandler> failureHandler;
 
-    // public BasicOAuth2LoginController(OAuth2LoginProperties
-    // oAuth2LoginProperties, OAuth2ClientServiceWrapper oAuth2ClientService) {
-    // this.oAuth2LoginProperties = oAuth2LoginProperties;
-    // this.oAuth2ClientService = oAuth2ClientService;
-    // }
     public BasicOAuth2LoginController(OAuth2LoginProperties oAuth2LoginProperties,
-            OAuth2ClientServiceDelegate oAuth2ClientServiceDelegate) {
+            OAuth2ClientServiceWrapper oAuth2ClientService) {
         this.oAuth2LoginProperties = oAuth2LoginProperties;
-        this.oAuth2ClientServiceDelegate = oAuth2ClientServiceDelegate;
+        this.oAuth2ClientService = oAuth2ClientService;
     }
 
     @RequestMapping(value = "${youkol.oauth2.web.authorize.path:/oauth2/authorize/{registrationId}}")
@@ -84,9 +77,7 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        // AbstractOAuth2ServiceWrapper oAuth20Service =
-        // oAuth2ClientService.getOAuth2Service(registrationId);
-        OAuth2ServiceDelegate oAuth20Service = oAuth2ClientServiceDelegate.getDelegate(registrationId);
+        AbstractOAuth2ServiceWrapper oAuth20Service = oAuth2ClientService.getOAuth2Service(registrationId);
 
         String redirectUriTemplate = oAuth20Service.getAuthorizationUrl(UUID.randomUUID().toString());
         redirectUriTemplate = URLDecoder.decode(redirectUriTemplate, StandardCharsets.UTF_8.displayName());
@@ -111,9 +102,7 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
         }
 
         try {
-            // AbstractOAuth2ServiceWrapper oAuth20Service =
-            // oAuth2ClientService.getOAuth2Service(registrationId);
-            OAuth2ServiceDelegate oAuth20Service = oAuth2ClientServiceDelegate.getDelegate(registrationId);
+            AbstractOAuth2ServiceWrapper oAuth20Service = oAuth2ClientService.getOAuth2Service(registrationId);
 
             OAuth2AccessToken accessToken = oAuth20Service.getAccessToken(code);
 

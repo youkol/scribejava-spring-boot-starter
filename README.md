@@ -7,7 +7,7 @@
 scribejava for spring boot autoconfigure.
 
 #### Features
- [x] OAuth2ServiceDelegate. You can customize your own delegate. For example: [SinaWeiboOAuth2ServiceDelegate](https://github.com/youkol/scribejava-spring-boot-starter/blob/master/src/main/java/com/youkol/support/scribejava/service/delegate/SinaWeiboOAuth2ServiceDelegate.java)   
+ [x] OAuth2ClientServiceWrapper. You can customize your own wrapper implementation. For example: [OAuth2ClientServiceWrapper](https://github.com/youkol/scribejava-spring-boot-starter/blob/master/src/main/java/com/youkol/support/scribejava/oauth2/client/OAuth2ClientServiceWrapper.java)   
  [x] Support for basic oauth2 authorization operations. For more information, please see
  [BasicOAuth2LoginController](https://github.com/youkol/scribejava-spring-boot-starter/blob/master/src/main/java/com/youkol/support/scribejava/spring/autoconfigure/oauth2/client/servlet/BasicOAuth2LoginController.java)   
  [x] Support for Authentication Success Handler and Failure Handler.
@@ -34,7 +34,7 @@ youkol:
     client:
       enabled: true
       registration:
-        wechat_offical: # => OAuth2ServiceDelegate.getName()
+        wechat_offical: # => spring WrapperDefaultApi20 bean name
           client-id: [your apikey]
           client-secret: [your apiSecret]
           scope: [default scope]
@@ -45,21 +45,14 @@ For your project
 @Configuration
 public class ScribejavaConfig {
     
-    @Bean
-    public SinaWeiboOAuth2ServiceDelegate sinaWeiboOAuth2ServiceDelegate(ClientRegistrationRepository clientRegistrationRepository, 
-            Optional<ObjectMapper> objectMapper) {
-        SinaWeiboOAuth2ServiceDelegate delegate = new SinaWeiboOAuth2ServiceDelegate(clientRegistrationRepository);
-        delegate.setObjectMapper(objectMapper);
-
-        return delegate;
+    @Bean("sina_weibo")
+    public SinaWeiboApi20 sinaWeiboApi20() {
+        return SinaWeiboApi20.instance();
     }
-    @Bean
-    public WeChatMpOAuth2ServiceDelegate weChatMpOAuth2ServiceDelegate(ClientRegistrationRepository clientRegistrationRepository, 
-            Optional<ObjectMapper> objectMapper) {
-        WeChatMpOAuth2ServiceDelegate delegate = new WeChatMpOAuth2ServiceDelegate(clientRegistrationRepository);
-        delegate.setObjectMapper(objectMapper);
 
-        return delegate;
+    @Bean("wechat_offical")
+    public WeChatMpApi20 weChatMpApi20() {
+        return WeChatMpApi20.instance();
     }
 
     @Bean
