@@ -76,7 +76,7 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
         this.oAuth2ClientServiceDelegate = oAuth2ClientServiceDelegate;
     }
 
-    @RequestMapping(value = "${youkol.web.oauth2.authorize.path:/oauth2/authorize/{registrationId}}")
+    @RequestMapping(value = "${youkol.oauth2.web.authorize.path:/oauth2/authorize/{registrationId}}")
     public void authenticate(@PathVariable String registrationId,
             @RequestParam(name = "redirect_uri", required = false) String successRedirectUri, // 成功授权之后，需要返回的地址
             HttpServletRequest request,
@@ -96,7 +96,7 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
         response.sendRedirect(redirectUri);
     }
 
-    @RequestMapping(value = "${youkol.web.oauth2.callback.path:/oauth2/callback/{registrationId}}")
+    @RequestMapping(value = "${youkol.oauth2.web.callback.path:/oauth2/callback/{registrationId}}")
     public void callback(@PathVariable String registrationId,
             @RequestParam(name = "redirect_uri", required = false) String successRedirectUri,
             @RequestParam(name = "code", required = false) String code,
@@ -126,10 +126,10 @@ public class BasicOAuth2LoginController implements OAuth2LoginController {
 
             // on success
             this.onAuthenticationSuccess(request, response, accessToken, oAuth2User);
+
+            // redirect uri.
             if (StringUtils.hasText(successRedirectUri)) {
                 response.sendRedirect(successRedirectUri);
-            } else {
-                response.sendRedirect("/");
             }
 
         } catch (OAuth2AuthenticationException ex) {
