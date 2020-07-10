@@ -80,7 +80,7 @@ public class WeChatMpOAuth2ServiceDelegate extends AbstractOAuth2ServiceDelegate
 
             log.debug("Response code: {}, body: {}", response.getCode(), response.getBody());
 
-            if (!response.isSuccessful()) {
+            if (response.getCode() != 200) {
                 try {
                     WeChatAccessTokenJsonExtractor jsonExtractor = (WeChatAccessTokenJsonExtractor) this.getApi()
                         .getAccessTokenExtractor();
@@ -91,6 +91,10 @@ public class WeChatMpOAuth2ServiceDelegate extends AbstractOAuth2ServiceDelegate
             }
 
             Map<String, Object> map = this.getLazyObjectMapper().readValue(response.getBody(), mapType);
+            if (map.containsKey("errcode") || map.containsKey("errmsg")) {
+                throw new OAuth2AuthenticationException(map.get("errcode").toString(), map.get("errmsg").toString(), response.getBody());
+            }
+            
             DefaultOAuth2User oAuth2User = new DefaultOAuth2User(NAME_PARAM_KEY, map);
 
             return oAuth2User;
