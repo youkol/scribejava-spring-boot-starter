@@ -42,12 +42,12 @@ import org.springframework.context.annotation.Import;
 @Import({ OAuth2ClientRegistrationRepositoryConfiguration.class })
 public class OAuth2ClientAutoConfiguration {
 
-    @Bean
-    @ConditionalOnBean(WrapperDefaultApi20.class)
-    @ConditionalOnMissingBean
-    public OAuth2ClientServiceWrapper oAuth2ClientService(ClientRegistrationRepository clientRegistrationRepository, Map<String, WrapperDefaultApi20> apis) {
-        return new OAuth2ClientServiceWrapper(clientRegistrationRepository, apis);
-    }
+    // @Bean
+    // @ConditionalOnBean(WrapperDefaultApi20.class)
+    // @ConditionalOnMissingBean
+    // public OAuth2ClientServiceWrapper oAuth2ClientService(ClientRegistrationRepository clientRegistrationRepository, Map<String, WrapperDefaultApi20> apis) {
+    //     return new OAuth2ClientServiceWrapper(clientRegistrationRepository, apis);
+    // }
 
     @Bean
     @ConditionalOnBean(OAuth2ServiceDelegate.class)

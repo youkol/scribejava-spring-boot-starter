@@ -48,7 +48,7 @@ public class OAuth2MvcAutoConfiguration {
     // }
 
     @Bean
-    @ConditionalOnBean(OAuth2ClientServiceWrapper.class)
+    @ConditionalOnBean(OAuth2ClientServiceDelegate.class)
     @ConditionalOnMissingBean(value = OAuth2LoginController.class, search = SearchStrategy.CURRENT)
     public BasicOAuth2LoginController oAuth2LoginController(OAuth2LoginProperties properties, OAuth2ClientServiceDelegate oAuth2ClientServiceDelegate) {
         return new BasicOAuth2LoginController(properties, oAuth2ClientServiceDelegate);
