@@ -18,6 +18,7 @@ package com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -100,7 +101,12 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
             @RequestParam(name = "code", required = false) String code,
             @RequestParam(name = "state", required = false) String state, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        log.debug("OAuth2 code: {}, state: {}, redirect_uri: {}", code, state, successRedirectUri);
+        String decodedSuccessRedirectUri = null;
+        if (StringUtils.hasText(successRedirectUri)) {
+            decodedSuccessRedirectUri = new String(Base64.getDecoder().decode(successRedirectUri));
+        }
+        
+        log.debug("OAuth2 code: {}, state: {}, redirect_uri: {}", code, state, decodedSuccessRedirectUri);
 
         if (!StringUtils.hasText(code)) {
             throw new OAuth2AuthenticationException("INVALID_REQUEST");
@@ -145,8 +151,8 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
         this.onAuthenticationSuccess(request, response, accessToken, oAuth2User);
 
         // redirect uri.
-        if (StringUtils.hasText(successRedirectUri)) {
-            response.sendRedirect(successRedirectUri);
+        if (StringUtils.hasText(decodedSuccessRedirectUri)) {
+            response.sendRedirect(decodedSuccessRedirectUri);
         }
     }
 
@@ -192,7 +198,9 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
         Map<String, String> uriVariables = new HashMap<>();
         uriVariables.put("baseUrl", baseUrl);
         uriVariables.put("registrationId", registrationId);
-        uriVariables.put("redirect_uri", successRedirectUri);
+        if (StringUtils.hasText(successRedirectUri)) { // Base64 encode, avoid some url information missing. for example: http://127.0.0.1/#/oauth2/redirect
+            uriVariables.put("redirect_uri", Base64.getEncoder().encodeToString(successRedirectUri.getBytes()));
+        }
 
         return UriComponentsBuilder.fromUriString(redirectUriTemplate)
             .encode()

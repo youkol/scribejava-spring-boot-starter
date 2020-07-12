@@ -46,7 +46,8 @@ For your project
 public class ScribejavaConfig {
     
     @Bean
-    public SinaWeiboOAuth2ServiceDelegate sinaWeiboOAuth2ServiceDelegate(ClientRegistrationRepository clientRegistrationRepository, 
+    public SinaWeiboOAuth2ServiceDelegate sinaWeiboOAuth2ServiceDelegate(
+            ClientRegistrationRepository clientRegistrationRepository, 
             Optional<ObjectMapper> objectMapper) {
         SinaWeiboOAuth2ServiceDelegate delegate = new SinaWeiboOAuth2ServiceDelegate(clientRegistrationRepository);
         delegate.setObjectMapper(objectMapper);
@@ -54,7 +55,8 @@ public class ScribejavaConfig {
         return delegate;
     }
     @Bean
-    public WeChatMpOAuth2ServiceDelegate weChatMpOAuth2ServiceDelegate(ClientRegistrationRepository clientRegistrationRepository, 
+    public WeChatMpOAuth2ServiceDelegate weChatMpOAuth2ServiceDelegate(
+            ClientRegistrationRepository clientRegistrationRepository, 
             Optional<ObjectMapper> objectMapper) {
         WeChatMpOAuth2ServiceDelegate delegate = new WeChatMpOAuth2ServiceDelegate(clientRegistrationRepository);
         delegate.setObjectMapper(objectMapper);
