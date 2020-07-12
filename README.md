@@ -38,7 +38,7 @@ youkol:
           client-id: [your apikey]
           client-secret: [your apiSecret]
           scope: [default scope]
-          redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}?redirect_uri={redirect_uri}" # default
+          redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}?redirect_uri={redirect_uri}" # for example
 ```
 For your project
 ```java 
