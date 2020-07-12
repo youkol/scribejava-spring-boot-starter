@@ -91,6 +91,7 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
         // add to cookie
         Cookie cookie = new Cookie("redirect_uri", successRedirectUri);
         cookie.setPath("/");
+        cookie.setHttpOnly(true);
         response.addCookie(cookie);
 
         OAuth2ServiceDelegate oAuth20Service = oAuth2ClientServiceDelegate.getDelegate(registrationId);
