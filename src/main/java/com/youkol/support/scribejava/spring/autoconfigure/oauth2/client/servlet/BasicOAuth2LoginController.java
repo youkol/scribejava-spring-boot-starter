@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -82,13 +83,22 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
     public void authenticate(@PathVariable String registrationId,
             @RequestParam(name = "redirect_uri", required = false) String successRedirectUri, // 成功授权之后，需要返回的地址
             HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String encodedSuccessRedirectUri = null;
+        if (StringUtils.hasText(successRedirectUri)) { // Base64 encode, avoid some url information missing. for example: http://127.0.0.1/#/oauth2/redirect
+            encodedSuccessRedirectUri = Base64.getEncoder().encodeToString(successRedirectUri.getBytes());
+        }
+
+        // add to cookie
+        Cookie cookie = new Cookie("redirect_uri", successRedirectUri);
+        cookie.setPath("/");
+        response.addCookie(cookie);
 
         OAuth2ServiceDelegate oAuth20Service = oAuth2ClientServiceDelegate.getDelegate(registrationId);
 
         String redirectUriTemplate = oAuth20Service.getAuthorizationUrl(UUID.randomUUID().toString());
         redirectUriTemplate = URLDecoder.decode(redirectUriTemplate, StandardCharsets.UTF_8.displayName());
 
-        String redirectUri = this.expandRedirectUri(request, registrationId, redirectUriTemplate, successRedirectUri);
+        String redirectUri = this.expandRedirectUri(request, registrationId, redirectUriTemplate, encodedSuccessRedirectUri);
 
         log.debug("OAuth2 redirectUri: " + redirectUri);
 
@@ -101,10 +111,7 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
             @RequestParam(name = "code", required = false) String code,
             @RequestParam(name = "state", required = false) String state, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        String decodedSuccessRedirectUri = null;
-        if (StringUtils.hasText(successRedirectUri)) {
-            decodedSuccessRedirectUri = new String(Base64.getDecoder().decode(successRedirectUri));
-        }
+        String decodedSuccessRedirectUri = getDecodedLocalRedirectUri(request, "redirect_uri", successRedirectUri);
         
         log.debug("OAuth2 code: {}, state: {}, redirect_uri: {}", code, state, decodedSuccessRedirectUri);
 
@@ -198,14 +205,34 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
         Map<String, String> uriVariables = new HashMap<>();
         uriVariables.put("baseUrl", baseUrl);
         uriVariables.put("registrationId", registrationId);
-        if (StringUtils.hasText(successRedirectUri)) { // Base64 encode, avoid some url information missing. for example: http://127.0.0.1/#/oauth2/redirect
-            uriVariables.put("redirect_uri", Base64.getEncoder().encodeToString(successRedirectUri.getBytes()));
+        if (StringUtils.hasText(successRedirectUri)) {
+            uriVariables.put("redirect_uri", successRedirectUri);
         }
 
         return UriComponentsBuilder.fromUriString(redirectUriTemplate)
             .encode()
             .buildAndExpand(uriVariables)
             .toUriString();
+    }
+
+    private String getDecodedLocalRedirectUri(HttpServletRequest request, String cookieName, String successRedirectUri) {
+        // try find from cookie
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null && cookies.length > 0) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(cookieName)) {
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        // Didn't find it from cookie, try find it from successRedirectUri parameter and decode it.
+        String decodedSuccessRedirectUri = null;
+        if (StringUtils.hasText(successRedirectUri)) {
+            decodedSuccessRedirectUri = new String(Base64.getDecoder().decode(successRedirectUri));
+        }
+
+        return decodedSuccessRedirectUri;
     }
 
     private String buildFullRequestUrl(HttpServletRequest request) {
