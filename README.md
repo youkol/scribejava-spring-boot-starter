@@ -75,3 +75,7 @@ public class ScribejavaConfig {
     }
 }
 ```
+
+#### NOTE
+Thanks to spring and spring-security project.
+When the project allows, recommend spring-security.
