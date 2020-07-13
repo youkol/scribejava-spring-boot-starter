@@ -89,7 +89,8 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
         }
 
         // add to cookie
-        Cookie cookie = new Cookie("redirect_uri", successRedirectUri);
+        // Avoid Error: java.lang.IllegalArgumentException: An invalid character [13] was present in the Cookie value
+        Cookie cookie = new Cookie("redirect_uri", encodedSuccessRedirectUri);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
@@ -217,12 +218,14 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
     }
 
     private String getDecodedLocalRedirectUri(HttpServletRequest request, String cookieName, String successRedirectUri) {
-        // try find from cookie
+        Base64.Decoder decoder = Base64.getDecoder();
+        // try find from cookie and decode value
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length > 0) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(cookieName)) {
-                    return cookie.getValue();
+                    String value = cookie.getValue();
+                    return new String(decoder.decode(value));
                 }
             }
         }
@@ -230,7 +233,7 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
         // Didn't find it from cookie, try find it from successRedirectUri parameter and decode it.
         String decodedSuccessRedirectUri = null;
         if (StringUtils.hasText(successRedirectUri)) {
-            decodedSuccessRedirectUri = new String(Base64.getDecoder().decode(successRedirectUri));
+            decodedSuccessRedirectUri = new String(decoder.decode(successRedirectUri));
         }
 
         return decodedSuccessRedirectUri;
