@@ -185,7 +185,8 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
             throws IOException, ServletException {
         // fire event
         if (this.eventPublisher != null) {
-            this.eventPublisher.publishEvent(new AuthenticationFailureEvent(accessToken, exception));
+            OAuth2AccessToken token = accessToken == null ? new OAuth2AccessToken(null) : accessToken;
+            this.eventPublisher.publishEvent(new AuthenticationFailureEvent(token, exception));
         }
 
         Iterator<AuthenticationFailureHandler> iterator = failureHandler.iterator();
