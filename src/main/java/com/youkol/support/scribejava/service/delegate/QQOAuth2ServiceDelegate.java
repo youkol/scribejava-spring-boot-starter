@@ -56,12 +56,12 @@ public class QQOAuth2ServiceDelegate extends AbstractOAuth2ServiceDelegate {
     }
 
     public QQOAuth2ServiceDelegate(String registrationId, ClientRegistrationRepository clientRegistrationRepository) {
-        super(registrationId, DEFAULT_API20, clientRegistrationRepository, Optional.empty());
+        super(registrationId, clientRegistrationRepository, DEFAULT_API20, Optional.empty());
     }
 
     public QQOAuth2ServiceDelegate(String registrationId, ClientRegistrationRepository clientRegistrationRepository,
             Optional<ObjectMapper> objectMapper) {
-        super(registrationId, DEFAULT_API20, clientRegistrationRepository, objectMapper);
+        super(registrationId, clientRegistrationRepository, DEFAULT_API20, objectMapper);
     }
 
     @Override

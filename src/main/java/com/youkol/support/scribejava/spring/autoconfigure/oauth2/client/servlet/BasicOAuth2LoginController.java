@@ -34,6 +34,7 @@ import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.youkol.support.scribejava.apis.wechat.WeChatAccessTokenErrorResponse;
 import com.youkol.support.scribejava.oauth2.client.OAuth2ClientServiceDelegate;
 import com.youkol.support.scribejava.oauth2.user.OAuth2User;
+import com.youkol.support.scribejava.oauth2.user.OAuth2UserRequest;
 import com.youkol.support.scribejava.service.OAuth2AuthenticationException;
 import com.youkol.support.scribejava.service.delegate.OAuth2ServiceDelegate;
 import com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet.event.AuthenticationFailureEvent;
@@ -96,6 +97,9 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
         response.addCookie(cookie);
 
         OAuth2ServiceDelegate oAuth20Service = oAuth2ClientServiceDelegate.getDelegate(registrationId);
+        if (oAuth20Service == null) {
+            throw new OAuth2AuthenticationException("oAuth20Service cannot be null");
+        }
 
         String redirectUriTemplate = oAuth20Service.getAuthorizationUrl(UUID.randomUUID().toString());
         redirectUriTemplate = URLDecoder.decode(redirectUriTemplate, StandardCharsets.UTF_8.displayName());
@@ -113,19 +117,24 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
             @RequestParam(name = "code", required = false) String code,
             @RequestParam(name = "state", required = false) String state, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        String decodedSuccessRedirectUri = getDecodedLocalRedirectUri(request, "redirect_uri", successRedirectUri);
-        
-        log.debug("OAuth2 code: {}, state: {}, redirect_uri: {}", code, state, decodedSuccessRedirectUri);
-
-        if (!StringUtils.hasText(code)) {
-            throw new OAuth2AuthenticationException("INVALID_REQUEST");
-        }
-
         OAuth2AccessToken accessToken = null;
         OAuth2User oAuth2User;
+        OAuth2UserRequest oAuth2UserRequest = null;
+        String decodedSuccessRedirectUri = null;
 
         try {
+            decodedSuccessRedirectUri = getDecodedLocalRedirectUri(request, "redirect_uri", successRedirectUri);
+        
+            log.debug("OAuth2 code: {}, state: {}, redirect_uri: {}", code, state, decodedSuccessRedirectUri);
+
+            if (!StringUtils.hasText(code)) {
+                throw new OAuth2AuthenticationException("INVALID_REQUEST");
+            }
+
             OAuth2ServiceDelegate oAuth20Service = oAuth2ClientServiceDelegate.getDelegate(registrationId);
+            if (oAuth20Service == null) {
+                throw new OAuth2AuthenticationException("oAuth20Service cannot be null");
+            }
 
             accessToken = oAuth20Service.getAccessToken(code);
 
@@ -133,31 +142,33 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
 
             oAuth2User = oAuth20Service.getOAuth2User(accessToken);
 
+            oAuth2UserRequest = new OAuth2UserRequest(oAuth20Service.getClientRegistration(), accessToken);
+
+        } catch (OAuth2AuthenticationException ex) {
+            // on failure
+            this.onAuthenticationFailure(request, response, oAuth2UserRequest, ex);
+            throw ex;
         } catch (OAuth2AccessTokenErrorResponse ex) {
             // on failure
             OAuth2AuthenticationException exception = new OAuth2AuthenticationException(ex.getError().name(),
                     ex.getErrorDescription(), ex.getRawResponse(), ex);
-            this.onAuthenticationFailure(request, response, accessToken, exception);
+            this.onAuthenticationFailure(request, response, oAuth2UserRequest , exception);
             throw exception;
         } catch (WeChatAccessTokenErrorResponse ex) {
             // on failure
             OAuth2AuthenticationException exception = new OAuth2AuthenticationException(ex.getErrorCode(),
                     ex.getErrorMessage(), ex.getRawResponse(), ex);
-            this.onAuthenticationFailure(request, response, accessToken, exception);
+            this.onAuthenticationFailure(request, response, oAuth2UserRequest, exception);
             throw exception;
-        } catch (OAuth2AuthenticationException ex) {
-            // on failure
-            this.onAuthenticationFailure(request, response, accessToken, ex);
-            throw ex;
         } catch (Exception ex) {
             OAuth2AuthenticationException exception = new OAuth2AuthenticationException("OAuth2 callback error", ex);
             // on failure
-            this.onAuthenticationFailure(request, response, accessToken, exception);
+            this.onAuthenticationFailure(request, response, oAuth2UserRequest, exception);
             throw exception;
         }
 
         // on success
-        this.onAuthenticationSuccess(request, response, accessToken, oAuth2User);
+        this.onAuthenticationSuccess(request, response, oAuth2UserRequest, oAuth2User);
 
         // redirect uri.
         if (StringUtils.hasText(decodedSuccessRedirectUri)) {
@@ -166,32 +177,31 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
     }
 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-            OAuth2AccessToken accessToken, OAuth2User oAuth2User) throws IOException, ServletException {
+            OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) throws IOException, ServletException {
         log.debug("OAuth2User: " + oAuth2User);
 
         // fire event
         if (this.eventPublisher != null) {
-            this.eventPublisher.publishEvent(new AuthenticationSuccessEvent(accessToken, oAuth2User));
+            this.eventPublisher.publishEvent(new AuthenticationSuccessEvent(oAuth2UserRequest, oAuth2User));
         }
 
-        Iterator<AuthenticationSuccessHandler> iterator = successHandler.iterator();
+        Iterator<AuthenticationSuccessHandler> iterator = successHandler.orderedStream().iterator();
         while (iterator.hasNext()) {
-            iterator.next().onAuthenticationSuccess(request, response, accessToken, oAuth2User);
+            iterator.next().onAuthenticationSuccess(request, response, oAuth2UserRequest, oAuth2User);
         }
     }
 
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-            OAuth2AccessToken accessToken, OAuth2AuthenticationException exception)
+            OAuth2UserRequest oAuth2UserRequest, OAuth2AuthenticationException exception)
             throws IOException, ServletException {
         // fire event
         if (this.eventPublisher != null) {
-            OAuth2AccessToken token = accessToken == null ? new OAuth2AccessToken(null) : accessToken;
-            this.eventPublisher.publishEvent(new AuthenticationFailureEvent(token, exception));
+            this.eventPublisher.publishEvent(new AuthenticationFailureEvent(oAuth2UserRequest, exception));
         }
 
-        Iterator<AuthenticationFailureHandler> iterator = failureHandler.iterator();
+        Iterator<AuthenticationFailureHandler> iterator = failureHandler.orderedStream().iterator();
         while (iterator.hasNext()) {
-            iterator.next().onAuthenticationFailure(request, response, exception);
+            iterator.next().onAuthenticationFailure(request, response, oAuth2UserRequest, exception);
         }
     }
 

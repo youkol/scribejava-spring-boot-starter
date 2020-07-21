@@ -21,10 +21,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.youkol.support.scribejava.oauth2.user.OAuth2UserRequest;
 import com.youkol.support.scribejava.service.OAuth2AuthenticationException;
 
 public interface AuthenticationFailureHandler {
 
     void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-            OAuth2AuthenticationException exception) throws IOException, ServletException;
+        OAuth2UserRequest oAuth2UserRequest, OAuth2AuthenticationException exception) throws IOException, ServletException;
 }

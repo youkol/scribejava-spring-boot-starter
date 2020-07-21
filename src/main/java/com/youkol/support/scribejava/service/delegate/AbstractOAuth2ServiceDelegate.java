@@ -27,16 +27,16 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import com.youkol.support.scribejava.oauth2.client.registration.ClientRegistration;
 import com.youkol.support.scribejava.oauth2.client.registration.ClientRegistrationRepository;
 
-public abstract class AbstractOAuth2ServiceDelegate implements OAuth2ServiceDelegate {
+public abstract class AbstractOAuth2ServiceDelegate implements OAuth2ServiceDelegate, Cacheable {
 
-    private String registrationId;
+    private String name;
 
     private DefaultApi20 api;
 
-    private ClientRegistrationRepository clientRegistrationRepository;
-
     // memory cache
     private OAuth20Service oAuth20Service;
+
+    private ClientRegistrationRepository clientRegistrationRepository;
 
     private Optional<ObjectMapper> objectMapper = Optional.empty();
 
@@ -45,8 +45,8 @@ public abstract class AbstractOAuth2ServiceDelegate implements OAuth2ServiceDele
     protected static final TypeReference<Map<String, Object>> mapType = new TypeReference<Map<String, Object>>() {
     };
 
-    public AbstractOAuth2ServiceDelegate(String registrationId, DefaultApi20 api,
-            ClientRegistrationRepository clientRegistrationRepository, Optional<ObjectMapper> objectMapper) {
+    public AbstractOAuth2ServiceDelegate(String registrationId, ClientRegistrationRepository clientRegistrationRepository,
+            DefaultApi20 api, Optional<ObjectMapper> objectMapper) {
         if (registrationId == null) {
             throw new IllegalArgumentException("registrationId cannot be null");
         }
@@ -57,7 +57,7 @@ public abstract class AbstractOAuth2ServiceDelegate implements OAuth2ServiceDele
             throw new IllegalArgumentException("api cannot be null");
         }
 
-        this.registrationId = registrationId;
+        this.name = registrationId;
         this.api = api;
         this.clientRegistrationRepository = clientRegistrationRepository;
         if (objectMapper != null) {
@@ -80,36 +80,51 @@ public abstract class AbstractOAuth2ServiceDelegate implements OAuth2ServiceDele
 
     @Override
     public String getName() {
-        return registrationId;
+        return name;
     }
 
     @Override
     public void setName(String name) {
-        this.registrationId = name;
+        this.name = name;
     }
 
     @Override
     public OAuth20Service getOAuth20Service() {
-        if (this.oAuth20Service != null) {
+        OAuth20Service oAuth20Service = Optional.ofNullable(this.oAuth20Service).orElseGet(() -> {
+            ClientRegistration registration = this.getClientRegistration();
+            String scope = registration.getScopes().stream()
+                .collect(Collectors.joining(" "));
+
+            this.oAuth20Service = new ServiceBuilder(registration.getClientId())
+                .apiSecret(registration.getClientSecret())
+                .callback(registration.getRedirectUriTemplate())
+                .defaultScope(scope)
+                .build(this.getApi());
+
             return this.oAuth20Service;
-        }
+        });
 
-        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId(this.getName());
-        
-        String scope = registration.getScopes().stream()
-            .collect(Collectors.joining(" "));
-
-        this.oAuth20Service = new ServiceBuilder(registration.getClientId())
-            .apiSecret(registration.getClientSecret())
-            .callback(registration.getRedirectUriTemplate())
-            .defaultScope(scope)
-            .build(this.getApi());
-
-        return this.oAuth20Service;
+        return oAuth20Service;
     }
 
     @Override
     public DefaultApi20 getApi() {
         return this.api;
     }
+
+    @Override
+    public ClientRegistration getClientRegistration() {
+        ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(this.getName());
+        if (clientRegistration == null) {
+            throw new IllegalArgumentException("clientRegistration cannot be null");
+        }
+
+        return clientRegistration;
+    }
+
+    @Override
+    public void clearCache() {
+        this.oAuth20Service = null;
+    }
+
 }

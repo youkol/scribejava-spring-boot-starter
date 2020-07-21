@@ -48,8 +48,14 @@ public class OAuth2ClientServiceDelegate {
 
     public OAuth2ServiceDelegate getDelegate(String registrationId) {
         if (registrationId == null) {
-            throw new IllegalArgumentException("registrationId cannot be null");
+            return null;
         }
-        return this.oAuth2ServiceDelegates.get(registrationId);
+
+        OAuth2ServiceDelegate delegate = this.oAuth2ServiceDelegates.get(registrationId);
+        if (delegate == null || delegate.getClientRegistration() == null) {
+            return null;
+        }
+
+        return delegate;
     }
 }

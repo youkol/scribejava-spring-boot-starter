@@ -15,7 +15,7 @@
  */
 package com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet.event;
 
-import com.github.scribejava.core.model.OAuth2AccessToken;
+import com.youkol.support.scribejava.oauth2.user.OAuth2UserRequest;
 
 import org.springframework.context.ApplicationEvent;
 
@@ -28,12 +28,12 @@ public class AbstractAuthenticationEvent extends ApplicationEvent {
 
     private static final long serialVersionUID = 1L;
 
-    public AbstractAuthenticationEvent(OAuth2AccessToken accessToken) {
-        super(accessToken);
+    public AbstractAuthenticationEvent(OAuth2UserRequest oAuth2UserRequest) {
+        super(oAuth2UserRequest);
     }
 
-    public OAuth2AccessToken getOAuth2AccessToken() {
-        return (OAuth2AccessToken) super.getSource();
+    public OAuth2UserRequest getOAuth2UserRequest() {
+        return (OAuth2UserRequest) super.getSource();
     }
     
 }

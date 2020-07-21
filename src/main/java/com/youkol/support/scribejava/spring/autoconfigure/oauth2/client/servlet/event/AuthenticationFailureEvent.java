@@ -15,7 +15,7 @@
  */
 package com.youkol.support.scribejava.spring.autoconfigure.oauth2.client.servlet.event;
 
-import com.github.scribejava.core.model.OAuth2AccessToken;
+import com.youkol.support.scribejava.oauth2.user.OAuth2UserRequest;
 import com.youkol.support.scribejava.service.OAuth2AuthenticationException;
 
 public class AuthenticationFailureEvent extends AbstractAuthenticationEvent {
@@ -24,13 +24,13 @@ public class AuthenticationFailureEvent extends AbstractAuthenticationEvent {
 
     private OAuth2AuthenticationException exception;
 
-    public AuthenticationFailureEvent(OAuth2AccessToken accessToken, OAuth2AuthenticationException exception) {
-        super(accessToken);
+    public AuthenticationFailureEvent(OAuth2UserRequest oAuth2UserRequest, OAuth2AuthenticationException exception) {
+        super(oAuth2UserRequest);
         this.exception = exception;
     }
 
     public OAuth2AuthenticationException getException() {
-		return exception;
+        return exception;
     }
 
 }

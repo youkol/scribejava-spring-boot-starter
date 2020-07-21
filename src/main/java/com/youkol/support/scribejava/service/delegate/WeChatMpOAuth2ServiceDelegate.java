@@ -59,12 +59,12 @@ public class WeChatMpOAuth2ServiceDelegate extends AbstractOAuth2ServiceDelegate
 
     public WeChatMpOAuth2ServiceDelegate(String registrationId,
             ClientRegistrationRepository clientRegistrationRepository) {
-        super(registrationId, DEFAULT_API20, clientRegistrationRepository, Optional.empty());
+        super(registrationId, clientRegistrationRepository, DEFAULT_API20, Optional.empty());
     }
 
     public WeChatMpOAuth2ServiceDelegate(String registrationId,
             ClientRegistrationRepository clientRegistrationRepository, Optional<ObjectMapper> objectMapper) {
-        super(registrationId, DEFAULT_API20, clientRegistrationRepository, objectMapper);
+        super(registrationId, clientRegistrationRepository, DEFAULT_API20, objectMapper);
     }
 
     @Override

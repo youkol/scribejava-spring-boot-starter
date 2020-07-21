@@ -25,18 +25,18 @@ public class OAuth2AuthenticationException extends Exception {
 
     private String rawResponse;
 
-    public OAuth2AuthenticationException(String errorMessage) {
-        super(errorMessage);
-        this.errorMessage = errorMessage;
+    public OAuth2AuthenticationException(String rawResponse) {
+        super(rawResponse);
+        this.rawResponse = rawResponse;
     }
 
     public OAuth2AuthenticationException(Throwable cause) {
         super(cause);
     }
 
-    public OAuth2AuthenticationException(String errorMessage, Throwable cause) {
-        super(errorMessage, cause);
-        this.errorMessage = errorMessage;
+    public OAuth2AuthenticationException(String rawResponse, Throwable cause) {
+        super(rawResponse, cause);
+        this.rawResponse = rawResponse;
     }
     
     public OAuth2AuthenticationException(String errorCode, String errorMessage, String rawResponse) {
