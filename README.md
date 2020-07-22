@@ -11,7 +11,7 @@ scribejava for spring boot autoconfigure.
  - [x] Support for basic oauth2 authorization operations. For more information, please see
  [BasicOAuth2LoginController](https://github.com/youkol/scribejava-spring-boot-starter/blob/master/src/main/java/com/youkol/support/scribejava/spring/autoconfigure/oauth2/client/servlet/BasicOAuth2LoginController.java)   
  - [x] Support for Authentication Success Handler and Failure Handler.
- - [x] Suuport for ApplicationEventPublisher.
+ - [x] Support for ApplicationEventPublisher.
 
  #### Usage
 For Maven
