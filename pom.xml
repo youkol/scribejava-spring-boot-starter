@@ -28,7 +28,7 @@
 
   <groupId>com.youkol.support.scribejava</groupId>
   <artifactId>scribejava-spring-boot-starter</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.2</version>
   <packaging>jar</packaging>
 
   <name>Youkol :: scribejava-spring-boot-starter</name>
@@ -64,7 +64,7 @@
     <connection>scm:git:git://github.com/youkol/scribejava-spring-boot-starter.git</connection>
     <developerConnection>scm:git:git@github.com:youkol/scribejava-spring-boot-starter.git</developerConnection>
     <url>https://github.com/youkol/scribejava-spring-boot-starter</url>
-    <tag>HEAD</tag>
+    <tag>v1.0.2</tag>
   </scm>
 
   <issueManagement>
