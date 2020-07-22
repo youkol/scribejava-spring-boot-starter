@@ -62,6 +62,8 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
 
     public static final Logger log = LoggerFactory.getLogger(BasicOAuth2LoginController.class);
 
+    private static final String REDIRECT_URI_COOKIE_NAME = "redirect_uri";
+
     private OAuth2LoginProperties oAuth2LoginProperties;
 
     private OAuth2ClientServiceDelegate oAuth2ClientServiceDelegate;
@@ -91,7 +93,7 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
 
         // add to cookie
         // Avoid Error: java.lang.IllegalArgumentException: An invalid character [13] was present in the Cookie value
-        Cookie cookie = new Cookie("redirect_uri", encodedSuccessRedirectUri);
+        Cookie cookie = new Cookie(REDIRECT_URI_COOKIE_NAME, encodedSuccessRedirectUri);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
@@ -124,6 +126,13 @@ public class BasicOAuth2LoginController implements OAuth2LoginController, Applic
 
         try {
             decodedSuccessRedirectUri = getDecodedLocalRedirectUri(request, "redirect_uri", successRedirectUri);
+
+            // delete cookie
+            Cookie cookie = new Cookie(REDIRECT_URI_COOKIE_NAME, "");
+            cookie.setPath("/");
+            cookie.setMaxAge(0);
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
         
             log.debug("OAuth2 code: {}, state: {}, redirect_uri: {}", code, state, decodedSuccessRedirectUri);
 

@@ -41,7 +41,7 @@ public class ClientsConfiguredCondition extends SpringBootCondition {
             String clientIds = registrations.values().stream()
                 .map(OAuth2ClientProperties.Registration::getClientId)
                 .collect(Collectors.joining(", "));
-            return ConditionOutcome.match(message.foundExactly("registered clients" + clientIds));
+            return ConditionOutcome.match(message.foundExactly("registered clients " + clientIds));
         }
 
         return ConditionOutcome.noMatch(message.notAvailable("registered clients"));

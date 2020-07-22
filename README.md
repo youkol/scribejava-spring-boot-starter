@@ -7,10 +7,11 @@
 scribejava for spring boot autoconfigure.
 
 #### Features
- [x] OAuth2ServiceDelegate. You can customize your own delegate. For example: [SinaWeiboOAuth2ServiceDelegate](https://github.com/youkol/scribejava-spring-boot-starter/blob/master/src/main/java/com/youkol/support/scribejava/service/delegate/SinaWeiboOAuth2ServiceDelegate.java)   
- [x] Support for basic oauth2 authorization operations. For more information, please see
+ - [x] OAuth2ServiceDelegate. You can customize your own delegate. For example: [SinaWeiboOAuth2ServiceDelegate](https://github.com/youkol/scribejava-spring-boot-starter/blob/master/src/main/java/com/youkol/support/scribejava/service/delegate/SinaWeiboOAuth2ServiceDelegate.java)   
+ - [x] Support for basic oauth2 authorization operations. For more information, please see
  [BasicOAuth2LoginController](https://github.com/youkol/scribejava-spring-boot-starter/blob/master/src/main/java/com/youkol/support/scribejava/spring/autoconfigure/oauth2/client/servlet/BasicOAuth2LoginController.java)   
- [x] Support for Authentication Success Handler and Failure Handler.
+ - [x] Support for Authentication Success Handler and Failure Handler.
+ - [x] Suuport for ApplicationEventPublisher.
 
  #### Usage
 For Maven
